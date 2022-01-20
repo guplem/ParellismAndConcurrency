@@ -3,6 +3,11 @@ package Exercise_03_SCP_A;
 public class SCP_A {
     
     public static void main (String [] args) {
+    	
+		System.out.println("EXERCISE 3 UNSYNCHRONIZED STORAGE-COUNTER-PRINTER");
+		System.out.println("-------------------------------------------------");
+		System.out.println("");
+    	
         Storage storage = new Storage();
         
         Counter counter = new Counter(storage);
@@ -31,8 +36,7 @@ class Counter extends Thread {
     
     public Counter (Storage storage) {
         this.storage = storage;
-        // once created, instances of Counter start themselves
-       /* COMPLETE */
+        start();
     }
     
     public void run () {
@@ -50,11 +54,17 @@ class Printer extends Thread {
     
     public Printer (Storage storage) {
         this.storage = storage;
-        // once created, instances of Printer start themselves
-        /* COMPLETE */
+        start();
     }
     
     public void run () {
-        /* COMPLETE */
+		while(true) {
+	    	int value = storage.getValue();
+	    	String printedText = "";
+	        for (int i=0; i<=value; i++) {
+	        	printedText += " ";
+	        }
+	        System.out.println(printedText + value);
+		}
     }
 }

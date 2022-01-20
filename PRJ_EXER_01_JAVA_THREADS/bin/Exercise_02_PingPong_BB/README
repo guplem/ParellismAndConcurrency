@@ -1,0 +1,11 @@
+You will probably notice that sometimes two (or more) consecutive PONGS
+ (or PINGS) appear.  Add a “synchronization mechanism” that makes the 
+interleaving of PINGS and PONGS perfect (each ping is preceded and followed 
+by a pong, each pong is preceded and followed by a ping). Consider these two 
+possibilities:
+
+a.	...
+
+
+b.	Both threads share an object that has an int attribute. If its value 
+is 1, PING can print its line, if its value is 2, PONG can print its line. 

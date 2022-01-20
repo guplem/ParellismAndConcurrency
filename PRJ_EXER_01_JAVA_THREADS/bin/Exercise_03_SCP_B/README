@@ -1,0 +1,6 @@
+a)	...
+b)	Modify the program to ensure that each number is printed exactly once, 
+by adding suitable synchronization. Consider using an object that allows 
+Printer and Counter communicating with each other. Try to avoid busy-waiting. 
+Instead, make threads sleep for a short time (e.g. some nanoseconds), 
+check for the desired condition to be true and sleep again if it is false.

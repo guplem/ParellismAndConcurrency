@@ -1,0 +1,6 @@
+a)	...
+
+b)	Change the “Launcher” program so that before starting the threads 
+it gives MAX_PRIORITY to one of them and MIN_PRIORITY to the other one. 
+Execute several times to see whether the given priorities have any effect 
+on the number of iterations performed or not.

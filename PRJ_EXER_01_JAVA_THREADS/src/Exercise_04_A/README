@@ -1,0 +1,7 @@
+a)	Write a subclass of Thread the instances of which endlessly print 
+(System.out.println) a String composed of a line (given as a parameter) and 
+a number reflecting the times the main loop has been performed (counter).
+Writer a “Launcher” program that creates two instances of the threads previously
+described, starts them, waits (sleeps) for a number of seconds (e.g. 5), 
+kills the threads and writes the total number of times each thread has 
+performed its main loop. 

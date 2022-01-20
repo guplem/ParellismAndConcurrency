@@ -1,0 +1,12 @@
+You will probably notice that sometimes two (or more) consecutive PONGS
+ (or PINGS) appear.  Add a “synchronization mechanism” that makes the 
+interleaving of PINGS and PONGS perfect (each ping is preceded and followed 
+by a pong, each pong is preceded and followed by a ping). Consider these two 
+possibilities:
+
+a.	Each thread has a publicly accessible canPrint attribute the value 
+of which is true if and only if the thread is allowed to print its message. 
+Before printing the thread busy waits until its canPrint attribute is true. 
+After printing, the thread changes its canPrint attribute to false, 
+its companion’s to true and goes to sleep (Provide a setCompanion method so 
+that the main thread can set each thread’s companion).

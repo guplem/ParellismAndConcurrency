@@ -1,0 +1,6 @@
+Write 2 subclasses of Thread, one that endlessly prints “PING” 
+and sleeps for a number of milliseconds (e.g. 10) and another 
+that endlessly prints “PONG” and sleeps for the same number of milliseconds.
+Then, write a “main” program that launches one instance of the ping thread 
+and one instance of the pong thread. Make the main program wait for 5 seconds 
+and then stop the launched threads.

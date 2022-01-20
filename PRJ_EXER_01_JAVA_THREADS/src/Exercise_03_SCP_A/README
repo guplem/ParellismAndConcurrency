@@ -1,0 +1,7 @@
+a)	Create three Classes: Storage, Counter and Printer. The Storage class 
+should passively store an integer. Instances of the Counter class should 
+endlessly count from 0 to 9 and store each value in a Storage instance.
+The instances of the Printer class should keep reading the value in the Storage
+instance and printing it. Write a program that creates an instance of the 
+Storage class, and sets up a Counter and a Printer object to operate on it. 
+Let the program run for a limited time (e.g. 5 seconds).

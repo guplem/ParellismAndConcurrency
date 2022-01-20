@@ -1,0 +1,5 @@
+Write a program that runs 5 threads, each thread randomizes a number 
+between 1 and 10, writes it on the screen and stores it in an attribute 
+(provide a getter). The main thread waits for all the others to finish, 
+calculates the sum of the numbers which were randomized and prints the sum. 
+Use method join.

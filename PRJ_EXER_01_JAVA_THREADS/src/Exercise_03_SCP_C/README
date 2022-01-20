@@ -1,0 +1,7 @@
+a)	...
+b)	...
+c)	Let the Storage objects take care of the synchronization issues. 
+Modify the getValue and the setValue methods so that they keep the invoking
+thread waiting if the value cannot be got/set.  
+In addition to this modification, Storage objects will require a method to be 
+notified when a value has been printed, plus some additional attributes.

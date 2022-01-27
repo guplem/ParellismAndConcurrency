@@ -24,18 +24,50 @@ public class PingPong_Sync_A {
 }
 class Ping extends Thread {
     
-    public volatile boolean canPrint = /* true or false? */;
+    public volatile boolean canPrint = true;
     
     private Pong companion;
     
-    /* COMPLETE */
+    public void setCompanion(Pong pong) {
+    	this.companion = pong;
+    }
+    
+    @Override
+    public void run() {
+        while (true) {
+            while (!canPrint) { // Espera activa, el processador segueix ocupat amb el thread, no gaire recomenable
+	            try {
+					Thread.sleep(10);
+	    		} catch (InterruptedException e) { }
+            }
+            System.out.println("PING");
+            canPrint = false;
+            companion.canPrint = true;
+        }
+    }
 }
 
 class Pong extends Thread {
     
-    public volatile boolean canPrint = /* true or false? */;
+    public volatile boolean canPrint = false;
     
     private Ping companion;
     
-    /* COMPLETE */
+    public void setCompanion(Ping ping) {
+    	this.companion = ping;
+    }
+    
+    @Override
+    public void run() {
+        while (true) {
+            while (!canPrint) { // Espera activa, el processador segueix ocupat amb el thread, no gaire recomenable
+	            try {
+					Thread.sleep(10);
+	    		} catch (InterruptedException e) { }
+            }
+            System.out.println("   PONG");
+            canPrint = false;
+            companion.canPrint = true;
+        }
+    }
 }

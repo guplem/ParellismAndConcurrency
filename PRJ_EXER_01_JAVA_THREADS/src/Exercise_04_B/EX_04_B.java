@@ -3,12 +3,19 @@ package Exercise_04_B;
 public class EX_04_B {
     
     public static void main (String [] args) {
-        LineThread a, b;
+    	
+		System.out.println("EXERCISE 4 THREADS THAT WRITE WITH DIFFERENT PRIORITY");
+		System.out.println("-----------------------------------------------------");
+		System.out.println("");
+		
+		LineThread a, b;
         
         a = new LineThread("A");
         b = new LineThread("  B");
         
-        /* COMPLETE */
+        // Note that if the CPU is not busy, the opportunities of both threads might be the same. Priority != frequency of opportunities
+        a.setPriority(Thread.MIN_PRIORITY);
+        b.setPriority(Thread.MAX_PRIORITY);
         
         a.start();
         b.start();

@@ -3,6 +3,11 @@ package Exercise_03_SCP_B;
 public class SCP_B {
     
     public static void main (String [] args) {
+    	
+		System.out.println("EXERCISE 3 SYNCHRONIZED STORAGE-COUNTER-PRINTER WITH ACTIVE WAITING AND SHARED OBJECT");
+		System.out.println("-------------------------------------------------------------------------------------");
+		System.out.println("");
+    	
         Storage storage = new Storage();
         SynchroMechanism synchro = new SynchroMechanism();
         
@@ -25,7 +30,7 @@ class SynchroMechanism {
 }
 
 class Storage {
-    private int value = -1000;
+    private volatile int value = -1000;
     
     public int getValue() {return this.value;}
     public void setValue(int value) {this.value = value;}
@@ -47,9 +52,11 @@ class Counter extends Thread {
         while (true) {
             for (i=0; i<=9; i++) {
                 while(!synchro.canStore) {
-                    /* COMPLETE */
+                    Thread.yield();
                 }
-                /* COMPLETE */
+                storage.setValue(i);
+                synchro.canStore = false;
+                synchro.canPrint = true;
             }
         }
     }
@@ -69,7 +76,21 @@ class Printer extends Thread {
     public void run () {
         int i;
         while (true) {
-            /* COMPLETE */
+            while(!synchro.canPrint) {
+                Thread.yield();
+            }
+            printStoredValue();
+            synchro.canPrint = false;
+            synchro.canStore = true;
         }
     }
+
+	private void printStoredValue() {
+    	int value = storage.getValue();
+    	String printedText = "";
+        for (int i=0; i<=value; i++) {
+        	printedText += " ";
+        }
+        System.out.println(printedText + value);
+	}
 }

@@ -3,6 +3,11 @@ package Exercise_02_PingPong_BA;
 public class PingPong_Sync_A {
     
     public static void main (String [] args) {
+    	
+		System.out.println("EXERCISE 2 SYNCHRONIZED PING PONG WITH ACTIVE WAITING");
+		System.out.println("-----------------------------------------------------");
+		System.out.println("");
+    	
         Ping ping = new Ping();
         Pong pong = new Pong();
         
@@ -36,9 +41,7 @@ class Ping extends Thread {
     public void run() {
         while (true) {
             while (!canPrint) { // Espera activa, el processador segueix ocupat amb el thread, no gaire recomenable
-	            try {
-					Thread.sleep(10);
-	    		} catch (InterruptedException e) { }
+        		Thread.yield();
             }
             System.out.println("PING");
             canPrint = false;
@@ -61,9 +64,7 @@ class Pong extends Thread {
     public void run() {
         while (true) {
             while (!canPrint) { // Espera activa, el processador segueix ocupat amb el thread, no gaire recomenable
-	            try {
-					Thread.sleep(10);
-	    		} catch (InterruptedException e) { }
+            	Thread.yield();
             }
             System.out.println("   PONG");
             canPrint = false;

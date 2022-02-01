@@ -31,10 +31,14 @@ public class C_TicTacTacToe {
 
 class Shared {
 	
-	private boolean canTic = true;
-	private boolean canTac = false;
-	public boolean majusTac = true;
-	private boolean canToe = false;
+	private volatile boolean canTic = true;
+	private volatile boolean canTac = false;
+	private volatile boolean canToe = false;
+	
+	private volatile boolean wantsSplash = false;
+	private volatile boolean canSplash = false;
+	
+	public volatile boolean majusTac = true;
 	
 	public void letMeTic () {
 		while(!canTic)
@@ -45,6 +49,7 @@ class Shared {
 	public void ticWritten () {
 		canTic = false;
 		canTac = true;
+		canSplash = false;
 	}
 	
 	
@@ -56,7 +61,9 @@ class Shared {
 	
 	public void tacWritten () {
 		canTac = false;
-		canToe = true;
+		canSplash = wantsSplash && !majusTac;
+		wantsSplash = false;
+		canToe = !canSplash;
 		majusTac = !majusTac;
 	}
 	
@@ -69,11 +76,15 @@ class Shared {
 	public void toeWritten () {
 		canToe = false;
 		canTic = true;
+		canSplash = false;
 	}
 
 	public void letMeSplash() {
-		while(!canToe || majusTac)
+		while(!canSplash)
+		{
+			wantsSplash = true;
 			Thread.yield();
+		}
 		return;
 	}
 
@@ -81,6 +92,7 @@ class Shared {
 		canTic = true;
 		canTac = false;
 		canToe = false;
+		canSplash = false;
 	}
 	
 	
@@ -146,12 +158,10 @@ class Toe extends Thread {
 		while (true) {
 			shared.letMeToe();
 			print();
-			try {
-				Thread.sleep(75);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
+			// Sleep to ensure the visualization of the "SPLASH!" message
+			try { Thread.sleep(75); } catch (InterruptedException e) { e.printStackTrace(); }
+			
 			shared.toeWritten();
 		}
 	}

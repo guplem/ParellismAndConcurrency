@@ -4,7 +4,21 @@ public class B_TicTacTacToe {
 	
 	public static void main (String [] args)  {
 		
-		/* COMPLETE */
+		Shared sharedObject = new Shared();
+		
+		Thread tic = new Tic(sharedObject);
+		Thread tac = new Tac(sharedObject);
+		Thread toe = new Toe(sharedObject);
+		
+		tic.start();
+		tac.start();
+		toe.start();
+		
+		try {
+			Thread.sleep(5*1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		tic.stop();
 		tac.stop();
@@ -14,46 +28,42 @@ public class B_TicTacTacToe {
 
 class Shared {
 	
-	/* COMPLETE -private attributes- private? yes, private*/
+	private boolean canTic = true;
+	private boolean canTac = false;
+	private boolean canToe = false;
 	
 	public void letMeTic () {
-		// invoked by Tic before writing TIC-.
-		// if this method returns then it is safe to write TIC-
-		
-		/* COMPLETE */
+		while(!canTic)
+			Thread.yield();
+		return;
 	}
 	
 	public void ticWritten () {
-		// invoked by Tic just after printing TIC-
-		
-		/* COMPLETE */
+		canTic = false;
+		canTac = true;
 	}
 	
 	
 	public void letMeTac () {
-		// invoked by Tac before writing TAC (or tac)
-		// if this method returns then it is safe to write TAC (or tac)
-		
-		/* COMPLETE */
+		while(!canTac)
+			Thread.yield();
+		return;
 	}
 	
 	public void tacWritten () {
-		// invoked by Tac just after printing TAC (or tac)
-		
-		/* COMPLETE */
+		canTac = false;
+		canToe = true;
 	}
 	
 	public void letMeToe () {
-		// invoked by Toe before writing -TOE.
-		// if this method returns then it is safe to write -TOE
-		
-		/* COMPLETE */
+		while(!canToe)
+			Thread.yield();
+		return;
 	}
 	
 	public void toeWritten () {
-		// invoked by Toe just after printing -TOE
-		
-		/* COMPLETE */
+		canToe = false;
+		canTic = true;
 	}
 	
 	
@@ -71,8 +81,13 @@ class Tic extends Thread {
 	public  void run () {
 		while (true) {
 			shared.letMeTic();
-			/* COMPLETE */
+			print();
+			shared.ticWritten();
 		}
+	}
+	
+	private void print() {
+		System.out.print("TIC-");
 	}
 }
 
@@ -80,7 +95,7 @@ class Tic extends Thread {
 class Tac extends Thread {
 	
 	private Shared shared;
-	// anything else? /* COMPLETE if needed*/
+	private boolean majus = true;
 	
 	public Tac (Shared sh) {
 		this.shared = sh;
@@ -88,12 +103,22 @@ class Tac extends Thread {
 	
 	public void run () {
 		while (true) {
-			/* COMPLETE */
+			shared.letMeTac();
+			print();
+			shared.tacWritten();
 		}
+	}
+	
+	private void print() {
+		if (majus)
+			System.out.print("TAC");
+		else
+			System.out.print("tac");
+		majus = !majus;
 	}
 }
 
-/* Do not modify this class */
+
 class Toe extends Thread {
 	
 	private Shared shared;
@@ -104,9 +129,14 @@ class Toe extends Thread {
 	
 	public  void run () {
 		while (true) {
-			/* COMPLETE */
+			shared.letMeToe();
+			print();
 			shared.toeWritten();
 		}
+	}
+	
+	private void print() {
+		System.out.println("-TOE");
 	}
 }
 

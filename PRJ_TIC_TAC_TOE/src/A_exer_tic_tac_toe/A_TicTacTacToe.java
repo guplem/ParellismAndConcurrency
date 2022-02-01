@@ -4,7 +4,21 @@ public class A_TicTacTacToe {
 	
 	public static void main (String [] args)  {	
 		
-		/* COMPLETE */
+		Shared sharedObject = new Shared();
+		
+		Thread tic = new Tic(sharedObject);
+		Thread tac = new Tac(sharedObject);
+		Thread toe = new Toe(sharedObject);
+		
+		tic.start();
+		tac.start();
+		toe.start();
+		
+		try {
+			Thread.sleep(5*1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		tic.stop();
 		tac.stop();
@@ -13,36 +27,93 @@ public class A_TicTacTacToe {
 }
 
 class Shared {
-	 /*
-	 ...an object that encapsulates three boolean attributes (they may be public) 
-	 and nothing more
-	 */
+	public boolean canTic = true;
+	public boolean canTac = false;
+	public boolean canToe = false;
 }
 
 class Tic extends Thread {
 	// endlessly prints TIC-
 	
+	public Tic(Shared sharedObject) {
+		this.sharedObject = sharedObject;
+	}
+	
 	private Shared sharedObject;
 	
-	/* COMPLETE */
+	@Override
+	public void run() {
+		while(true) {
+			if (sharedObject.canTic)
+				print();
+			else
+				Thread.yield();
+		}
+	}
+
+	private void print() {
+		System.out.print("TIC-");
+		sharedObject.canTic = false;
+		sharedObject.canTac = true;
+	}
 }
 
 class Tac extends Thread {
 	// endlessly prints TAC (or tac)
 	
+	public Tac(Shared sharedObject) {
+		this.sharedObject = sharedObject;
+	}
+
 	private Shared sharedObject;
-	// anything else? 
+	private boolean majus = true;
 	
-	/* COMPLETE */
+	@Override
+	public void run() {
+		while(true) {
+			if (sharedObject.canTac)
+				print();
+			else
+				Thread.yield();
+		}
+	}
+
+	private void print() {
+		if (majus)
+			System.out.print("TAC");
+		else
+			System.out.print("tac");
+		majus = !majus;
+		sharedObject.canTac = false;
+		sharedObject.canToe = true;
+	}
 	
 }
 
 class Toe extends Thread {
 	// endlessly prints -TOE
 	
+	public Toe(Shared sharedObject) {
+		this.sharedObject = sharedObject;
+	}
+	
 	private Shared sharedObject;
 	
-	/* COMPLETE */
+	@Override
+	public void run() {
+		while(true) {
+			if (sharedObject.canToe)
+				print();
+			else
+				Thread.yield();
+		}
+	}
 	
+	
+	private void print() {
+		System.out.println("-TOE");
+		sharedObject.canToe = false;
+		sharedObject.canTic = true;
+	}
 }
 

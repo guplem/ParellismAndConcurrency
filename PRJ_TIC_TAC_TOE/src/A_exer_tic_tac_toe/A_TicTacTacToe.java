@@ -27,9 +27,9 @@ public class A_TicTacTacToe {
 }
 
 class Shared {
-	public boolean canTic = true;
-	public boolean canTac = false;
-	public boolean canToe = false;
+	public volatile boolean canTic = true;
+	public volatile boolean canTac = false;
+	public volatile boolean canToe = false;
 }
 
 class Tic extends Thread {

@@ -28,9 +28,9 @@ public class B_TicTacTacToe {
 
 class Shared {
 	
-	private boolean canTic = true;
-	private boolean canTac = false;
-	private boolean canToe = false;
+	private volatile boolean canTic = true;
+	private volatile boolean canTac = false;
+	private volatile boolean canToe = false;
 	
 	public void letMeTic () {
 		while(!canTic)

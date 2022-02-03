@@ -47,7 +47,7 @@ class Ping extends Thread {
 	public void run ()  {
 		while (true) {
 			
-			/* COMPLETE */ 
+			while(!sharedAtomicInt.compareAndSet(MPP_AI.CAN_PING, MPP_AI.WRITING)) {Thread.yield();}
 			
 			System.out.print("PING("+id+")");
 			try {Thread.sleep(10);} catch(InterruptedException ie ) {}
@@ -72,11 +72,14 @@ class Pong extends Thread {
 	public void run ()  {
 		while (true) {
 			
-			/* COMPLETE */ 
+			while(!sharedAtomicInt.compareAndSet(MPP_AI.CAN_PONG, MPP_AI.WRITING)) {Thread.yield();}
 			
 			System.out.println("PONG("+id+")");
 			
-			/* COMPLETE */
+			try {Thread.sleep(10);} catch(InterruptedException ie ) {}
+			
+			// once ping's written, let's give a ping the chance to write
+			sharedAtomicInt.set(MPP_AI.CAN_PING);
 		}
 	}
 }

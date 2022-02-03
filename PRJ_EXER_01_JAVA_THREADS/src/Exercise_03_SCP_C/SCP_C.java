@@ -4,6 +4,11 @@ package Exercise_03_SCP_C;
 public class SCP_C {
     
     public static void main (String [] args) {
+    	
+		System.out.println("EXERCISE 3.C SYNCHRONIZED STORAGE-COUNTER-PRINTER WITH ACTIVE WAITING AND STORAGE AS SYNCHRONIZATION");
+		System.out.println("----------------------------------------------------------------------------------------------------");
+		System.out.println("");
+    	
         Storage storage = new Storage();
         
         Counter counter = new Counter(storage);
@@ -23,27 +28,28 @@ class Storage {
     private volatile int value = -1000;
     
     private volatile boolean canBeSet = true;
-    private volatile boolean canBeGot = false;
     
-    public int getValue() {
-    	/* COMPLETE */
-        
-    	while ( /*COMPLETE */) {
+    public int getValue() {        
+    	while (canBeSet) {
             try {Thread.sleep(0,10);} catch(InterruptedException ie) {}
         }
         
-        /* COMPLETE */
+    	int retValue = value;
+    	canBeSet = true;
+        return retValue;
     }
     
     public void setValue(int value) {
     	
-    	/* COMPLETE */
+    	while ( !canBeSet) {
+            try {Thread.sleep(0,10);} catch(InterruptedException ie) {}
+        }
     	
         this.value = value;
         // once a value has been set it can be got but a new one can't be set
         // until the old one has been got
         canBeSet = false;
-        canBeGot = true;
+
     }
 }
 

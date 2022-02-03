@@ -2,6 +2,8 @@ package e2_mpp_AtomicBoolean;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import e1_mpp_AtomicInteger.MPP_AI;
+
 public class MPP_AB {
 	public static void main (String [] args) throws InterruptedException {
 		
@@ -29,25 +31,26 @@ public class MPP_AB {
 class Synchronizer {
 	
 	// you'll need to instances of AtomicBoolean properly initialized
-	/* COMPLETE */
+	AtomicBoolean canPing = new AtomicBoolean(true);
+	AtomicBoolean canPong = new AtomicBoolean();
 	
 	
 	public void letMePing() {
 		// "spin" until ping can we written
-		/* COMPLETE */
+		while(!canPing.compareAndSet(true, false)) {Thread.yield();}
 	}
 	
 	public void letMePong() {
 		// "spin" until pong can we written
-		/* COMPLETE */
+		while(!canPong.compareAndSet(true, false)) {Thread.yield();}
 	}
 	
 	public void pingDone () {
-		/* COMPLETE */
+		canPong.set(true);
 	}
 	
 	public void pongDone () {
-		/* COMPLETE */
+		canPing.set(true);
 	}
  }
 

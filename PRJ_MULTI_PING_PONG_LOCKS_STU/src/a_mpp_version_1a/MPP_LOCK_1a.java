@@ -54,9 +54,16 @@ class Ping extends Thread {
 	}
 	
 	public void run ()  {
+		
 		while (true) {
 			
-			/* COMPLETE */
+			sync.lock.lock();
+			
+			while(!sync.canPing) {
+				sync.lock.unlock();
+				Thread.yield();
+				sync.lock.lock();
+			}
 			
 			System.out.print("ping("+id+")");
 			try {Thread.sleep(10);} catch(InterruptedException ie ) {}
@@ -65,7 +72,7 @@ class Ping extends Thread {
 			
 			// this point is reached when still holding the lock...
 			// now release it
-		    sync.lock.unlock(); 
+		    sync.lock.unlock(); // Important
 		}
 	}
 }
@@ -84,11 +91,22 @@ class Pong extends Thread {
 	public void run ()  {
 		while (true) {
 			
-			/* COMPLETE */
+			sync.lock.lock();
 			
-			System.out.println("PONG("+id+")");
+			while(sync.canPing) {
+				sync.lock.unlock();
+				Thread.yield();
+				sync.lock.lock();
+			}
 			
-			/* COMPLETE */
+			System.out.println("  pong("+id+")");
+			try {Thread.sleep(10);} catch(InterruptedException ie ) {}
+			
+			sync.canPing = true;
+			
+			// this point is reached when still holding the lock...
+			// now release it
+		    sync.lock.unlock(); // Important
 		}
 	}
 }

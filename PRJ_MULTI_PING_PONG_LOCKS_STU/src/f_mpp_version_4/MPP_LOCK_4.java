@@ -37,7 +37,7 @@ class PingPongMonitor {
 	private volatile boolean canPing = true; 
 	private volatile int lastPingId;
 	
-	public synchronized void doPing(int id) {
+	public synchronized void doPing(int id) { // Only one can be executed at the same time
 		if (canPing) {
 			System.out.print("ping("+id+")");
 			canPing = !canPing;
@@ -45,7 +45,7 @@ class PingPongMonitor {
 		}
 	}
 	
-	public synchronized void doPong(int id) {
+	public synchronized void doPong(int id) { // Only one can be executed at the same time
 		if (!canPing && id==lastPingId ) {
 			System.out.println("PONG("+id+")");
 			canPing = !canPing;
@@ -66,7 +66,7 @@ class Ping extends Thread {
 	
 	public void run ()  {
 		while (true) {
-			ppMonitor.doPing(id);
+			ppMonitor.doPing(id); // Delegate check
 			try {Thread.sleep(10);} catch(InterruptedException ie ) {}
 		}
 	}
@@ -84,7 +84,7 @@ class Pong extends Thread {
 	
 	public void run ()  {
 		while (true) {
-			ppMonitor.doPong(id);
+			ppMonitor.doPong(id); // Delegate check
 		}
 	}
 }

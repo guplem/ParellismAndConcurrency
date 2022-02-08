@@ -48,7 +48,15 @@ class Ping extends Thread {
 		
 		while (true) {
 			
-			/* COMPLETE */
+			synchronized(sync) {
+				 // If this point is reached, the thread is currently owning the lock in sync
+				if (sync.canPing)
+				{
+					System.out.print("ping("+id+")");
+					try {Thread.sleep(10);} catch(InterruptedException ie ) {}
+					sync.canPing = false;
+				}
+			}
 			
 		}
 	}
@@ -68,7 +76,16 @@ class Pong extends Thread {
 	public void run ()  {
 		while (true) {
 			
-			/* COMPLETE */
+			synchronized(sync) {
+				 // If this point is reached, the thread is currently owning the lock in sync
+				if (!sync.canPing)
+				{
+					System.out.println(" pong("+id+")");
+					try {Thread.sleep(10);} catch(InterruptedException ie ) {}
+					sync.canPing = true;
+				}
+			}
+			
 		}
 	}
 }

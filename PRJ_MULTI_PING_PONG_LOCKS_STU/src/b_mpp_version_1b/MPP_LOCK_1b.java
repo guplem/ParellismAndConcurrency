@@ -38,21 +38,33 @@ class LockBasedSynchronizer {
 	private volatile boolean canPing = true; 
 	
 	public void letMePing () {
-		/* COMPLETE */
 		// when this method is exited, ping is possible and the invoker is holding the lock
+		lock.lock();
+		while(!canPing) {
+			lock.unlock();
+			Thread.yield();
+			lock.lock();
+		}
 	}
 	
 	public void pingDone () {
-		/* COMPLETE */
+		canPing = false;
+	    lock.unlock();
 	}
 	
 	public void letMePong () {
-		/* COMPLETE */
 		// when this method is exited, pong is possible and the invoker is holding the lock
+		lock.lock();
+		while(canPing) {
+			lock.unlock();
+			Thread.yield();
+			lock.lock();
+		}
 	}
 	
 	public void pongDone () {
-		/* COMPLETE */
+		canPing = true;
+	    lock.unlock();
 	}
 	
 }

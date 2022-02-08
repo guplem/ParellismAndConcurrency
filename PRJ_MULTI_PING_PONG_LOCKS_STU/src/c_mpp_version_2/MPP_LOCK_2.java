@@ -39,19 +39,32 @@ class LockBasedSynchronizer {
 	private volatile int lastPingId;
 	
 	public void letMePing () {
-		/* COMLETE */
+		lock.lock();
+		while(!canPing) {
+			lock.unlock();
+			Thread.yield();
+			lock.lock();
+		}
 	}
 	
 	public void pingDone (int id) {
-		/* COMLETE */
+		canPing = false;
+		lastPingId = id;
+	    lock.unlock();
 	}
 	
 	public void letMePong (int id) {
-		/* COMLETE */
+		lock.lock();
+		while(canPing || lastPingId != id) {
+			lock.unlock();
+			Thread.yield();
+			lock.lock();
+		}
 	}
 	
 	public void pongDone () {
-		/* COMLETE */
+		canPing = true;
+	    lock.unlock();
 	}
 	
 }

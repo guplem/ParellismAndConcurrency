@@ -29,9 +29,9 @@ public class B_Multi_TTT_TS {
 }
 
 class AtomicBooleanEncapsulation {
-	public AtomicBoolean ticPossible = new AtomicBoolean(/* COMPLETE */);
-	public AtomicBoolean tacPossible = new AtomicBoolean(/* COMPLETE */);
-	public AtomicBoolean toePossible = new AtomicBoolean(/* COMPLETE */);
+	public AtomicBoolean ticPossible = new AtomicBoolean(true);
+	public AtomicBoolean tacPossible = new AtomicBoolean(false);
+	public AtomicBoolean toePossible = new AtomicBoolean(false);
 }
 
 class Tic extends Thread {
@@ -46,10 +46,12 @@ class Tic extends Thread {
 	
 	public  void run () {
 		while (true) {
-			/* COMPLETE */
+			while(!syncTool.ticPossible.compareAndSet(true, false)) {
+				Thread.yield();
+			}
 			System.out.print("TIC("+id+")-");
 			try {Thread.sleep(50);} catch (InterruptedException ie) {}
-			/* COMPLETE */
+			syncTool.tacPossible.set(true);
 		}
 	}
 }
@@ -69,7 +71,13 @@ class Tac extends Thread {
 	
 	public void run () {
 		while (true) {
-			/* COMPLETE */
+			while(!syncTool.tacPossible.compareAndSet(true, false)) {
+				Thread.yield();
+			}
+			if (upperCase) System.out.print("TAC("+id+")");
+			else System.out.print("tac("+id+")");
+			upperCase = !upperCase;
+			syncTool.toePossible.set(true);
 		}
 	}
 }
@@ -86,7 +94,11 @@ class Toe extends Thread {
 	
 	public  void run () {
 		while (true) {
-			/* COMPLETE */
+			while(!syncTool.toePossible.compareAndSet(true, false)) {
+				Thread.yield();
+			}
+			System.out.println("-TOE("+id+")");
+			syncTool.ticPossible.set(true);
 		}
 	}
 }

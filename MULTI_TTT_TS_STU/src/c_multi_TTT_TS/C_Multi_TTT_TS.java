@@ -37,25 +37,31 @@ class TsBasedSynchronizer  {
 	AtomicInteger state = new AtomicInteger(TIC_POSSIBLE);
 	
 	public void letMeTic() {
-		
+		while(!state.compareAndSet(TIC_POSSIBLE, WRITING_IN_COURSE)) {
+			Thread.yield();
+		}
 	}
 	public void letMeTac() {
-		
+		while(!state.compareAndSet(TAC_POSSIBLE, WRITING_IN_COURSE)) {
+			Thread.yield();
+		}
 	}
 	public void letMeToe() {
-		
+		while(!state.compareAndSet(TOE_POSSIBLE, WRITING_IN_COURSE)) {
+			Thread.yield();
+		}
 	}
 	
 	public void ticDone() {
-		
+		state.set(TAC_POSSIBLE);
 	}
 	
 	public void tacDone() {
-		
+		state.set(TOE_POSSIBLE);
 	}
 	
 	public void toeDone() {
-		
+		state.set(TIC_POSSIBLE);
 	}
 	
 }
@@ -72,7 +78,9 @@ class Tic extends Thread {
 	
 	public  void run () {
 		while (true) {
-			/* COMPLETE */
+			syncTool.letMeTic();
+			System.out.print("TIC("+id+")-");
+			syncTool.ticDone();
 		}
 	}
 }
@@ -92,7 +100,11 @@ class Tac extends Thread {
 	
 	public void run () {
 		while (true) {
-			/* COMPLETE */
+			syncTool.letMeTac();
+			if (upperCase) System.out.print("TAC("+id+")");
+			else System.out.print("tac("+id+")");
+			upperCase = !upperCase;
+			syncTool.tacDone();
 		}
 	}
 }
@@ -109,7 +121,9 @@ class Toe extends Thread {
 	
 	public  void run () {
 		while (true) {
-			/* COMPLETE */
+			syncTool.letMeToe();
+			System.out.println("-TOE("+id+")");
+			syncTool.toeDone();
 		}
 	}
 }

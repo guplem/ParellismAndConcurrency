@@ -13,7 +13,7 @@ public class A_Multi_TTT_TS {
 	static int INSTANCES = 10;
 	
 	public static void main (String [] args) throws InterruptedException {	
-		AtomicInteger syncTool = new AtomicInteger(/* INITIALIZE */);
+		AtomicInteger syncTool = new AtomicInteger(1);
 		Tic[] theTics = new Tic[INSTANCES];
 		Tac[] theTacs = new Tac[INSTANCES];
 		Toe[] theToes = new Toe[INSTANCES];
@@ -46,10 +46,12 @@ class Tic extends Thread {
 	
 	public  void run () {
 		while (true) {
-			/* COMPLETE */
-			System.out.print("TIC("+id+")-");
-			try {Thread.sleep(50);} catch (InterruptedException ie) {}
-			/* COMPLETE */
+			if (syncTool.compareAndSet(1, 4)) {
+				System.out.print("TIC("+id+")-");
+				syncTool.set(2);
+			}
+			
+			Thread.yield();
 		}
 	}
 }
@@ -69,10 +71,14 @@ class Tac extends Thread {
 	
 	public void run () {
 		while (true) {
-			/* COMPLETE */
-			if (upperCase) System.out.print("TAC("+id+")");
-			else System.out.print("tac("+id+")");
-			/* COMPLETE */
+			if (syncTool.compareAndSet(2, 4)) {
+				if (upperCase) System.out.print("TAC("+id+")");
+				else System.out.print("tac("+id+")");
+				upperCase = !upperCase;
+				syncTool.set(3);
+			}
+		
+			Thread.yield();
 		}
 	}
 }
@@ -89,7 +95,12 @@ class Toe extends Thread {
 	
 	public  void run () {
 		while (true) {
-			/* COMPLETE */
+			if (syncTool.compareAndSet(3, 4)) {
+				System.out.println("-TOE("+id+")");
+				syncTool.set(1);
+			}
+			
+			Thread.yield();
 		}
 	}
 }

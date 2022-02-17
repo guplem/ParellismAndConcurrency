@@ -35,8 +35,41 @@ public class MSCP_LOCK_B {
 //Classes Counter and Printer are OK. Do not change them
 
 class SyncStorage {
+	// sync related stuff. CONSTANTS
+	private static final int CAN_SET = 1;
+	private static final int CAN_GET = 2;
+	// sync related stuff. STATE
+	private volatile int state = CAN_SET;
+	// sync related stuff. LOCK
+	private  Lock lock = new ReentrantLock();
 	
-	/* Copy from previous part and add/modify whatever necessary */
+	// storage related stuff. VALUE and methods
+    private volatile int value = -1000;
+    int lastId = -1;
+    
+    public void setValue(int value) {
+    	// No fa falta un lock perque només hi ha un "SyncStorage"
+    	while (state != CAN_SET) {Thread.yield();}
+    	this.value = value;
+    	state = CAN_GET;
+    }
+    
+    public int getValue(int id) {
+    	// Fa falta lock perque multiples processos poden voler el valor del "SyncStorage"
+    	lock.lock();
+    	while (state != CAN_GET || lastId == id) {
+    		lock.unlock();
+    		Thread.yield();
+    		lock.lock();
+		}
+    	lastId = id;
+    	return this.value; // Atenció, la propietat del lock es manté després de fer el return
+    }
+    
+    public void valuePrinted() {
+    	state = CAN_SET;
+		lock.unlock(); // Es treu la propietat del lock aqui perque si no un altre podria agafar el valor abans de que fos imprès
+    }
     
 }
 

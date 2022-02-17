@@ -43,9 +43,30 @@ class SyncStorage {
 	
 	// storage related stuff. VALUE and methods
     private volatile int value = -1000;
-    public void setValue(int value) {/* COMPLETE */}
-    public int getValue() {/* COMPLETE */}
-    public void valuePrinted() {/* COMPLETE */}
+    
+    public void setValue(int value) {
+    	// No fa falta un lock perque només hi ha un "SyncStorage"
+    	while (state != CAN_SET) {Thread.yield();}
+    	this.value = value;
+    	state = CAN_GET;
+    }
+    
+    public int getValue() {
+    	// Fa falta lock perque multiples processos poden voler el valor del "SyncStorage"
+    	lock.lock();
+    	while (state != CAN_GET) {
+    		lock.unlock();
+    		Thread.yield();
+    		lock.lock();
+		}
+    	return this.value; // Atenció, la propietat del lock es manté després de fer el return
+    }
+    
+    public void valuePrinted() {
+    	state = CAN_SET;
+		lock.unlock(); // Es treu la propietat del lock aqui perque si no un altre podria agafar el valor abans de que fos imprès
+    }
+    
 }
 
 // Classes Counter and Printer are OK. Do not change them

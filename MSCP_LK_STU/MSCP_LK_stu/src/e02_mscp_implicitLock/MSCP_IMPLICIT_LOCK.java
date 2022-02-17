@@ -35,6 +35,7 @@ class SyncStorage {
 	// sync related stuff. CONSTANTS
 	private static final int CAN_SET = 1;
 	private static final int CAN_GET = 2;
+	private static final int MUST_PRINT = 3;
 
 	// sync related stuff. STATE
 	private volatile int state = CAN_SET;
@@ -53,13 +54,13 @@ class SyncStorage {
     }
     
     public int getValue(int id) {
-    	/* FIX THIS!!! */
     	boolean goAhead = false;
     	while (!goAhead) {
     		synchronized (this) {
     			if (state==CAN_GET && lastId!=id) {
-    				state=CAN_SET;
     				goAhead = true;
+    				state = MUST_PRINT;
+    				lastId = id;
     			}
     		}
     	}
@@ -67,8 +68,7 @@ class SyncStorage {
     }
     
     public void valuePrinted() {
-    	// in this version, nothing to do here
-    	/* FIX THIS ???  */
+    	state=CAN_SET;
     }
     
 }

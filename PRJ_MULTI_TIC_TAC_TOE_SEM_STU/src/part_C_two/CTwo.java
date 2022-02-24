@@ -41,43 +41,58 @@ class Synchronizer {
 	private volatile int lastTicId = -1;
 	private volatile boolean frogReady = false;
 	
-	private Semaphore canTic = new Semaphore(/* permits */);
-	private Semaphore canTac = new Semaphore(/* permits */);
-	private Semaphore canToe = new Semaphore(/* permits */);
-	private Semaphore canLeap = new Semaphore(/* permits */);
+	private Semaphore canTic = new Semaphore(1);
+	private Semaphore canTac = new Semaphore(0);
+	private Semaphore canToe = new Semaphore(0);
+	private Semaphore canLeap = new Semaphore(0);
 	
 	
 	public void letMeTic (int id) {
-		/* COMPLETE */
-		// same as in part C one
+		while(true) {
+			try { canTic.acquire(); } catch (InterruptedException e) { }
+			if (id != lastTicId ) {
+				lastTicId = id;
+				return;
+			} else {
+				canTic.release();
+			}
+		}
 	}
 	public void ticDone () {
-		/* COMPLETE */
-		// same as in part C one
+		canTac.release();
 	}
 	
 	public void letMeTac () {
-		/* COMPLETE */
-		// same as in part C one
+		try { canTac.acquire(); } catch (InterruptedException e) { }
 	}
 	public void tacDone ()  {
-		/* COMPLETE */
-		// same as in part C one
+		canToe.release();
 	}
 	
 	public void letMeToe (int id) {
-		/* COMPLETE */
-		// same as in part C one
+		while (true) {			
+			try { canToe.acquire(); } catch (InterruptedException e) {}
+			if (id == lastTicId ) {
+				return;
+			} else {
+				canToe.release();
+			}
+		}
 	}
 	public void toeDone () {
-		/* COMPLETE */
+		if (!frogReady)
+			canTic.release();
+		else
+			canLeap.release();
 	}
 	
 	public void letMeLeap () {
-		/* COMPLETE */
+		frogReady = true;
+		try { canLeap.acquire(); } catch (InterruptedException e) { }
 	}
 	public void leapDone () {
-		/* COMPLETE */
+		frogReady = false;
+		canTic.release();
 	}
 	
 	public boolean nowUppercase () {return this.uppercase;}

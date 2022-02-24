@@ -34,29 +34,44 @@ public class C_one {
 class Synchronizer {
 	private volatile boolean uppercase = true;
 	private volatile int lastTicId = -1;
-	private Semaphore canTic = new Semaphore(/* permits */);
-	private Semaphore canTac = new Semaphore(/* permits */);
-	private Semaphore canToe = new Semaphore(/* permits */);
+	private Semaphore canTic = new Semaphore(1);
+	private Semaphore canTac = new Semaphore(0);
+	private Semaphore canToe = new Semaphore(0);
 	
 	public void letMeTic (int id) {
-		/* COMPLETE */
+		while(true) {
+			try { canTic.acquire(); } catch (InterruptedException e) { }
+			if (id != lastTicId ) {
+				lastTicId = id;
+				return;
+			} else {
+				canTic.release();
+			}
+		}
 	}
 	public void ticDone () {
-		/* COMPLETE */
+		canTac.release();
 	}
 	
 	public void letMeTac () {
-		/* COMPLETE */
+		try { canTac.acquire(); } catch (InterruptedException e) { }
 	}
 	public void tacDone ()  {
-		/* COMPLETE */
+		canToe.release();
 	}
 	
 	public void letMeToe (int id) {
-		/* COMPLETE */
+		while (true) {			
+			try { canToe.acquire(); } catch (InterruptedException e) {}
+			if (id == lastTicId ) {
+				return;
+			} else {
+				canToe.release();
+			}
+		}
 	}
 	public void toeDone () {
-		/* COMPLETE */
+		canTic.release();
 	}
 	
 	public boolean nowUppercase () {return this.uppercase;}

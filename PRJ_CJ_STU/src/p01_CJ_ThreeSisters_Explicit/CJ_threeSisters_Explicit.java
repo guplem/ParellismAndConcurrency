@@ -26,25 +26,58 @@ public class CJ_threeSisters_Explicit {
 
 class ThreeSistersMonitor {
 	
-	// Add here all the attributes of the monitor
-	/* COMPLETE */
+	ReentrantLock lock = new ReentrantLock(true);
+	Condition barbCanTake = lock.newCondition();
+	Condition cordCanTake = lock.newCondition();
 	
-	public void adaTakes() {
-		/* COMPLETE */
+	int adaCountForBarb = 0;
+	int adaCountForCord = 0;
+	int barbCountForCord = 0;
+	
+	
+	public void adaTakes() {	
+		lock.lock();
+		
 		System.out.println("ADA takes a cookie");
+		adaCountForBarb++;
+		adaCountForCord++;		
+		
+		if (adaCountForBarb >= 2)
+			barbCanTake.signal();
+		
+		if (adaCountForCord >= 3 && barbCountForCord >= 1)
+			cordCanTake.signal();
+		
 		lock.unlock();
 	}
 	
 	public void barbTakes() {
-		/* COMPLETE */
-		System.out.println("\tBARB takes a cookie");
-		/* COMPLETE */
+		lock.lock();
+		
+		while(adaCountForBarb < 2)
+			barbCanTake.awaitUninterruptibly();
+		
+		adaCountForBarb = 0;
+		System.out.println("\t\t\tBARB takes a cookie");
+		barbCountForCord ++;
+
+		if (adaCountForCord >= 3 && barbCountForCord >= 1)
+			cordCanTake.signal();
+		
+		lock.unlock();
 	}
 	
 	public void cordTakes() {
-		/* COMPLETE */
-		System.out.println("\t\tCORD takes a cookie");
-		/* COMPLETE */
+		lock.lock();
+		
+		if (adaCountForCord >= 3 && barbCountForCord >= 1)
+			cordCanTake.awaitUninterruptibly();
+		
+		adaCountForCord = 0;
+		barbCountForCord = 0;
+		
+		System.out.println("\t\t\t\t\t\tCORD takes a cookie");
+		lock.unlock();
 	}
 }
 

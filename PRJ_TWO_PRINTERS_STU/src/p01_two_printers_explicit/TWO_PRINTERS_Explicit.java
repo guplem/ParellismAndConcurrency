@@ -33,13 +33,25 @@ class PrintingMonitor {
 	
 	private ReentrantLock lock = new ReentrantLock();
 	
-	/* COMPLETE */
+	Condition colourAvailable = lock.newCondition();
+	Condition BWAvailable = lock.newCondition();
 	
 	public PrinterCode requestBWPrinter(int procID) {
 		PrinterCode granted;
 		
 		lock.lock();
-		/* COMPLETE */
+		System.out.println("+ process "+procID+" requests BW");
+		while (!(colourFree || BWFree))
+			BWAvailable.awaitUninterruptibly();
+		
+		if (BWFree) {
+			BWFree = false;
+			granted = PrinterCode.BW;
+		}
+		else {
+			colourFree = false;
+			granted = PrinterCode.COBW;
+		}
 		System.out.println("- process "+procID+" has been granted "+granted.toString());
 		lock.unlock();
 		return granted;
@@ -48,15 +60,27 @@ class PrintingMonitor {
 	public PrinterCode requestColourPrinter(int procID) {
 		lock.lock();
 		System.out.println("+ process "+procID+" requests COLOUR");
-		/* COMPLETE */
+		while (!colourFree)
+			colourAvailable.awaitUninterruptibly();
+		colourFree = false;
 		System.out.println("- process "+procID+" has been granted "+PrinterCode.CO);
 		lock.unlock();
+		// Atenció, punt critic, aqui pot passar a executar-se un altre thread. Possible thread condition
 		return PrinterCode.CO;
 	}
 	
 	public void printDone (PrinterCode printerCode, int procID) {
 		lock.lock();
-		/* COMPLETE */
+		if (printerCode == PrinterCode.CO || printerCode == PrinterCode.COBW)
+		{
+			colourFree = true;
+			colourAvailable.signal();
+		}
+		else
+		{
+			BWFree = true;
+		}
+		BWAvailable.signal(); // Sempre passa a estar disponible alguna impresora per a imprimir en BW
 		System.out.println("- process "+procID+" has released "+printerCode);
 		lock.unlock();
 	}

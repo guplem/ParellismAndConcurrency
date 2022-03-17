@@ -41,7 +41,14 @@ public class Server extends Thread {
 			// if request is not HELLO, close connection and skip the rest
 			// of the iteration (continue;)
 			
-			/* COMPLETE */
+			request = this.receiveRequest();
+
+			if (request.equals("HELLO")) {
+				sendReply("JOKES " + theJokes.size());
+			} else {
+				disconnect();
+				continue;
+			}
 			
 			// get a request and iterate until the request is STOP
 			// JOKE requests generate several consecutive replies... 
@@ -49,7 +56,18 @@ public class Server extends Thread {
 			// all the lines of the joke
 			request = this.receiveRequest();
 			while (!request.equals("STOP")) {
-				/* COMPLETE */
+				
+				if (request.equals("JOKE")) {
+					String[] randomJoke = theJokes.get(alea.nextInt(theJokes.size()));
+					for (int i = -1; i < randomJoke.length; i++) {
+						if (i == -1)
+							sendReply(randomJoke.length+"");
+						else
+							sendReply(randomJoke[i]);
+					}
+				}
+				
+				request = this.receiveRequest();
 			}
 			
 			disconnect();

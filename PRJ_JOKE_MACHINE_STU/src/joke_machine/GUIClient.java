@@ -115,17 +115,57 @@ public class GUIClient extends JFrame {
 	protected void btnConnect_actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
 		// actions to perform when the user clicks on the connect button...
+		try {
+			connect();
+			jokeArea.setText("Connected.\n\n");
+			
+			sendRequest("HELLO");
+			String reply = receiveReply();
+			jokeArea.append("The server has " + reply.split(" ")[1] + " jokes.");
+			
+			btnNewJoke.setEnabled(true);
+			btnStop.setEnabled(true);
+			btnConnect.setEnabled(false);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
 	protected void btnNewJoke_actionPerformed(ActionEvent arg0) {
 		/* COMPLETE */
 		// actions to perform when the user clicks on the new joke button
+		try {
+			sendRequest("JOKE");
+			
+			
+			String reply = receiveReply();
+			
+			int numLines = Integer.parseInt(reply);
+			jokeArea.setText("Joke of " +numLines+ " lines:\n\n");
+			for (int i=1; i<=numLines; i++) {
+				reply=receiveReply();
+				jokeArea.append("\t"+reply+"\n");
+			}
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
 	protected void btnStop_actionPerformed(ActionEvent arg0) {
-		
+		try {
+			sendRequest("STOP");
+			jokeArea.setText("Disconnected");
+			btnNewJoke.setEnabled(false);
+			btnStop.setEnabled(false);
+			btnConnect.setEnabled(true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	protected void btnExit_actionPerformed(ActionEvent arg0) {
@@ -139,6 +179,9 @@ public class GUIClient extends JFrame {
 	//---------------------------------------------
 	
 	//declare your connection and connection related attributes here... 
+	private static Socket connection;
+	private static BufferedReader inputChannel;
+	private static PrintWriter outputChannel;
 	
 	
 	private void connect() throws IOException {

@@ -19,9 +19,21 @@ public class Server extends Thread {
 	} // launcher ends here
 	
 	
-	private Socket connection;
-	private BufferedReader inputChannel;
-	private PrintWriter outputChannel;
+	private Connection[] connections = new Connection[3];
+	private class Connection {
+		public Socket socket;
+		public BufferedReader inputChannel;
+		public PrintWriter outputChannel;
+	}
+	private class Request {
+		public Request(Connection connection, String command) {
+			this.connection = connection;
+			this.command = command;
+		}
+		public Connection connection;
+		public String command;
+	}
+	
 	private Random alea = new Random();
 	
 	public void run () {
@@ -32,7 +44,7 @@ public class Server extends Thread {
 	}
 	
 	private void innerRun () throws IOException {
-		String request;
+		Request request;
 		while (true) {
 			// accept a new connection
 			acceptConnection();
@@ -43,10 +55,10 @@ public class Server extends Thread {
 			
 			request = this.receiveRequest();
 
-			if (request.equals("HELLO")) {
-				sendReply("JOKES " + theJokes.size());
+			if (request.command.equals("HELLO")) {
+				sendReply("JOKES " + theJokes.size(), request.connection);
 			} else {
-				disconnect();
+				disconnect(request.connection);
 				continue;
 			}
 			
@@ -55,47 +67,65 @@ public class Server extends Thread {
 			// ... an integer (the number of lines of the joke) and
 			// all the lines of the joke
 			request = this.receiveRequest();
-			while (!request.equals("STOP")) {
+			while (!request.command.equals("STOP")) {
 				
-				if (request.equals("JOKE")) {
+				if (request.command.equals("JOKE")) {
 					String[] randomJoke = theJokes.get(alea.nextInt(theJokes.size()));
 					for (int i = -1; i < randomJoke.length; i++) {
 						if (i == -1)
-							sendReply(randomJoke.length+"");
+							sendReply(randomJoke.length+"", request.connection);
 						else
-							sendReply(randomJoke[i]);
+							sendReply(randomJoke[i], request.connection);
 					}
 				}
 				
 				request = this.receiveRequest();
 			}
 			
-			disconnect();
+			disconnect(request.connection);
 		}
 	}
 	// UTILITY METHODS. Do not modify
 	
 	private void acceptConnection () throws IOException {
-        this.connection = this.serverSocket.accept();
-        this.inputChannel = new BufferedReader(
+		
+		int freeSpace = -1;
+		for (int c = 0; c < this.connections.length; c ++ ) {
+			if (this.connections[c] == null)
+				freeSpace = c;
+		}
+		if (freeSpace == -1)
+			return;
+		
+		Connection connexion = new Connection();
+		connexion.socket = this.serverSocket.accept();
+		connexion.inputChannel = new BufferedReader(
                                 new InputStreamReader(
-                                    this.connection.getInputStream()));
-        this.outputChannel = new PrintWriter(
-                                 this.connection.getOutputStream(), true);
+                                		connexion.socket.getInputStream()));
+		connexion.outputChannel = new PrintWriter(
+				connexion.socket.getOutputStream(), true);
+		
+		connections [freeSpace] = connexion;
+		
     }
 	
-	private String receiveRequest () throws IOException {
-        return this.inputChannel.readLine();
+	private Request receiveRequest () throws IOException {
+		for (int c = 0; c < this.connections.length; c ++ ) {
+			String request = this.connections[c].inputChannel.readLine();
+			if (request != null)
+				return new Request(connections[c], request);
+		}
+		return null;
     }
 	
-	private void sendReply(String reply) throws IOException {
-		this.outputChannel.println(reply);
+	private void sendReply(String reply, Connection conection) throws IOException {
+		conection.outputChannel.println(reply);
 	}
 
-	private void disconnect() throws IOException {
-		this.connection.close();
-		this.inputChannel.close();
-		this.outputChannel.close();
+	private void disconnect(Connection conection) throws IOException {
+		conection.socket.close();
+		conection.inputChannel.close();
+		conection.outputChannel.close();
 	}
 	
 	//-----

@@ -13,9 +13,9 @@ public class Server extends Thread {
 	
 	// launcher...
 	public static void main (String [] args) throws IOException {
-		serverSocket = new ServerSocket(6768);
+		serverSocket = new ServerSocket(6666);
 		(new Server()).start();
-		System.out.println("Joke machine server created and listening to port 6768");
+		System.out.println("Joke machine server created and listening to port 6666");
 	} // launcher ends here
 	
 	

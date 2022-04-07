@@ -2,6 +2,7 @@ package ex2_CountDown;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class ServiceLauncher {
 	
@@ -10,6 +11,11 @@ public class ServiceLauncher {
 		System.out.println("CountDown service started");
 		
 		/* Complete */
-		
+
+		Socket connection;
+        while (true) {
+            connection = ss.accept();
+            new Server(connection).start();
+        }
 	}
 }

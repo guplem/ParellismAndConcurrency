@@ -27,21 +27,52 @@ public class Ex1_A_ImplicitLock {
 class Synchronizer {
 	
 	/* COMPLETE */
+	volatile int line = 0;
+	volatile int remainingPings = 1;
+	volatile int remainingPongs = -1;
+	volatile boolean pingAllowed = false;
+	volatile boolean pongAllowed = false;
 	
 	public void letMePing() {
 		/* COMPLETE */
+    	boolean can = false;
+    	while (!can) {
+    		synchronized (this) {
+    			can = remainingPings > 0 && !pingAllowed;
+    			pingAllowed = can || pingAllowed;
+    		}
+    	}
 	}
 	
 	public void pingDone() {
 		/* COMPLETE */
+		synchronized (this) {
+			remainingPings --;
+			line ++;
+			remainingPongs = line%2!=0 ? 1 : 2;
+			pingAllowed = false;
+		}
 	}
 	
 	public void letMePong() {
 		/* COMPLETE */
+    	boolean can = false;
+    	while (!can) {
+    		synchronized (this) {
+    			can = remainingPongs > 0 && !pongAllowed;
+    			pongAllowed = can || pongAllowed;
+    		}
+    	}
 	}
 	
 	public void pongDone() {
 		/* COMPLETE */
+		synchronized (this) {
+			remainingPongs --;
+			if (remainingPongs == 0)
+				remainingPings = 1;
+			pongAllowed = false;
+		}
 	}
 	
 }

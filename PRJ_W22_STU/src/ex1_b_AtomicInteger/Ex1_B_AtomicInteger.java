@@ -28,22 +28,45 @@ public class Ex1_B_AtomicInteger {
 
 class Synchronizer {
 	
+	int waiting = -1;
+	int pingTime = 0;
+	int firstPongTime = 1;
+	int secondPongTime = 2;
+	int finalPongDone = 3;
+	
 	/* COMPLETE */
+	AtomicInteger remainingPrints = new AtomicInteger(0);
+	volatile int line = 1;
+	volatile boolean allowedPing = false;
+	volatile boolean allowedPong = false;
 	
 	public void letMePing() {
 		/* COMPLETE */
+		boolean can = false;
+		while (!can) {
+			can = remainingPrints.compareAndSet(pingTime, waiting);
+		}
+		//System.out.println("LET ME PING. Remainings = " + remainingPrints.get());
 	}
 	
 	public void pingDone() {
 		/* COMPLETE */
+		line ++;
+		remainingPrints.compareAndSet(waiting, firstPongTime);
 	}
 	
 	public void letMePong() {
 		/* COMPLETE */
+		boolean can = false;
+		while (!can) {
+			can = remainingPrints.compareAndSet(firstPongTime, waiting) || remainingPrints.compareAndSet(secondPongTime, finalPongDone);
+		}
+		//System.out.println("LET ME PONG. Remainings = " + remainingPrints.get());
 	}
 	
 	public void pongDone() {
-		/* COMPLETE */
+		if (!remainingPrints.compareAndSet(waiting, line%2==0 ? pingTime : secondPongTime))
+			remainingPrints.compareAndSet(finalPongDone, pingTime);
 	}
 	
 }

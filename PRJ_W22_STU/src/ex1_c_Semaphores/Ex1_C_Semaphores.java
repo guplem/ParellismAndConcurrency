@@ -29,22 +29,40 @@ public class Ex1_C_Semaphores {
 class Synchronizer {
 	
 	/* COMPLETE */
+	Semaphore canPing = new Semaphore(1);
+	Semaphore canPong = new Semaphore(0);
+	int line = 0;
 	
 	public void letMePing(int id) {
 		/* COMPLETE */
+		try {
+			canPing.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void pingDone() {
 		/* COMPLETE */
+		line++;
+		canPong.release(line%2==0 ? 1 : 2);
 	}
 	
 	public void letMePong(int id) {
 		/* COMPLETE */
-		
+		try {
+			canPong.acquire();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void pongDone() {
 		/* COMPLETE */
+		if (canPong.availablePermits() <= 0)
+			canPing.release();
 	}
 	
 }
